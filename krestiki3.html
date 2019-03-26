@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+        <title>Page Title</title>
+        <style type="text/css">
+            
+            button{
+                height: 30px;
+                width: 30px;
+                color:blue;
+            }
+
+            div{
+                background-color: grey;
+                text-align:center ;
+                padding: 5px;
+            }
+
+            table {
+                margin: 0px auto  ;
+            }
+
+            #result{
+                background-color:black;
+                color:white;
+            }
+
+            img{
+                height: 100px;
+                width: 100px;
+            }
+            
+
+        </style>
+    </head>
+    <body>
+        
+        <div id="info"></div>
+        <div id="main"></div>
+        
+            
+        <div id="result">  </div>
+        <div id="restart"> play again! </div>
+        
+<script type="text/javascript">
+
+    function game(sizeField) {
+        var self = this;
+        var player1 = 1;
+        var player2 = 2;
+        var emptyPlayer = null;
+        var stepIsDone = 0;
+        this.player = player1;
+        this.sizeField = sizeField;
+        this.field = new Array(sizeField*sizeField);
+        this.winFlag = 0;
+
+        
+        this.changePlayer = function(){
+            if (stepIsDone){
+                self.player == player1 ? self.player = player2: self.player = player1;
+                stepIsDone = 0;
+            }
+        };
+
+        this.cleanArr = function(){
+            for (var x = 0; x < this.field.length; x++) {
+                this.field[x] = emptyPlayer;
+            }
+        };
+
+        this.addStep = function(id){
+
+            for (var x = 0; x < this.field.length; x++) {
+                    if (x == id && this.field[x] == emptyPlayer) {
+                        this.field[x] = this.player;
+                        stepIsDone = 1;
+                    }
+            }
+
+        };
+
+
+        this.checkWinner = function(){
+            checkLine("Horizontal");
+            checkLine("Vertical");
+            checkDiagonal("Left");
+            checkDiagonal("Right");
+        };
+
+        function checkLine(direction){
+            var result = 0;
+            for (var y = 0; y<self.sizeField ; y++){
+                for (var x = 0; x<self.sizeField ; x++){
+                    if (direction == "Horizontal"){
+                        var i = y*self.sizeField + x;}
+                    else if (direction == "Vertical"){
+                        var i = x*self.sizeField + y;}
+                    self.field[i] == self.player ? result++: result = 0;
+                    if (result == self.sizeField) {
+                        self.winFlag = 1;
+                    }
+                }
+                result = 0;
+            }
+        };
+
+        function checkDiagonal(direction){
+            var result = 0;
+            if (direction == "Left") {
+                var i1 = 0, i2 = 4, i3 = 8;
+            }
+            if (direction == "Right") {
+                var i1 = 2, i2 = 4, i3 = 6;
+            }
+
+            if (self.field[i1] == self.player && self.field[i2] == self.player && self.field[i3] == self.player){
+                self.winFlag = 1;
+            }
+        };
+
+    }
+
+
+
+
+
+
+
+
+window.onload = function (){
+
+    var sizeField = 3;
+    createTable(sizeField);
+    
+
+    var newGame = new game(sizeField);
+    printField(newGame.field); 
+
+    $(".imgArr").click(function (event) {
+        var currentButtonObject = $(event.currentTarget);
+        newGame.addStep(currentButtonObject[0].id);
+        newGame.checkWinner();
+        if (newGame.winFlag == 1 ) {
+            newGame.player == 1? alert("Win - X"): alert("Win - O");
+            newGame.cleanArr(); 
+            newGame.winFlag = 0
+        };
+        printField(newGame.field); 
+        newGame.changePlayer();
+    });
+
+    var restart_el = document.getElementById("restart");
+    restart_el.addEventListener("click", function(){restart(newGame)});
+    
+}
+
+
+
+
+
+
+function restart(newGame){
+    newGame.cleanArr();
+    printField(newGame.field);
+}
+
+function createTable(sizeField){
+    var index = 0;
+            var mainDiv_el = document.getElementById("main");
+            var table_el = document.createElement("table");
+            mainDiv_el.appendChild(table_el);
+            table_el.id = "table";
+
+            for (var y = 0; y<sizeField ; y++){
+                var tr = document.createElement("tr");
+                for (var x = 0; x<sizeField ; x++){
+                    var td = document.createElement("td");
+                    var b = document.createElement("img");
+                    b.className = "imgArr";
+                    b.id = index++;
+                    td.appendChild(b);
+                    tr.appendChild(td);
+                }
+                table_el.appendChild(tr);
+            }
+        };
+
+    function printField (field){
+        var btn = document.getElementsByClassName("imgArr");
+        for (var x = 0; x < btn.length; x++) {
+            if (field[x] == 1){
+                btn[x].src = "https://lightshow.od.ua/x.png";
+            }
+            else if(field[x] == 2){
+                btn[x].src = "https://lightshow.od.ua/o.png";
+            }
+            else{
+                btn[x].src = "https://lightshow.od.ua/e.png";
+            }
+        }
+    }
+
+
+
+
+</script>>
+
+    </body>
+</html>
